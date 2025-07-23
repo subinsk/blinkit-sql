@@ -30,7 +30,6 @@ def execute_city_insights_query(conn):
     
     conn.execute("DROP TABLE IF EXISTS blinkit_city_insights")
     
-    # Create the target table structure
     create_table_sql = """
     CREATE TABLE blinkit_city_insights (
         date TEXT,
@@ -58,19 +57,17 @@ def execute_city_insights_query(conn):
     """
     conn.execute(create_table_sql)
     
-    # Get unique cities to process in batches
     cities = pd.read_sql_query("SELECT DISTINCT city_name FROM blinkit_city_map", conn)['city_name'].tolist()
     print(f"Processing {len(cities)} cities...")
     
     total_rows = 0
-    batch_size = 5  # Process 5 cities at a time
+    batch_size = 5  
     
     for i in range(0, len(cities), batch_size):
         city_batch = cities[i:i+batch_size]
         city_list = "'" + "','".join(city_batch) + "'"
         print(f"Processing cities: {city_batch}")
         
-        # Simplified batch query
         batch_query = f"""
         INSERT INTO blinkit_city_insights
         SELECT 
@@ -115,7 +112,6 @@ def execute_city_insights_query(conn):
         total_rows += batch_count
         print(f"Batch completed. Rows added: {batch_count}")
     
-    # Export results
     result_df = pd.read_sql_query("SELECT * FROM blinkit_city_insights ORDER BY date, city_name, sku_id", conn)
     
     output_file = 'blinkit_city_insights_output.csv'

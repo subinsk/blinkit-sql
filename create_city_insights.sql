@@ -1,6 +1,3 @@
--- Create blinkit_city_insights derived table
--- This query calculates estimated quantity sold based on inventory movement over time
-
 CREATE TABLE blinkit_city_insights AS
 WITH inventory_changes AS (
     SELECT 
